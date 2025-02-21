@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+type Post = {
+  title: string
+}
+
+const allBlogPosts = await getCollection('blog');
+
+const posts = await getCollection('blog')
+---
+
+<Layout className='max-w-prose mx-auto '>
+  <ul class="">
+    {posts.map((post) => {
+      return (
+       <a href={`/blog/${post.id}`} class="hover:underline">
+         <li>
+          <h2>{post.data.title}</h2>
+          <p>{post.data.description}</p>
+        </li>
+       </a>
+      ) 
+    })}
+  </ul>
+</Layout>

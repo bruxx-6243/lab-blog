@@ -1,0 +1,25 @@
+---
+import Layout from './Layout.astro'
+
+type Props = {
+  title: string,
+  description: string
+}
+
+const {title, description} = Astro.props
+---
+
+
+<Layout className=' space-y-4 max-w-prose mx-auto'>
+<div class="space-y-4">
+  <h1 class="text-blue-600 text-2xl">{title}</h1>
+  <p class="text-xl text-gray-600">{description}</p>
+</div>
+
+<div class="space-y-4">
+  <slot />
+</div>
+
+<a href="/blog" class="text-blue-600 underline">all articles</a>
+</Layout>
+

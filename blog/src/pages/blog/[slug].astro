@@ -1,0 +1,83 @@
+---
+
+import { getEntry, render } from "astro:content";
+import { Comment, db, eq } from "astro:db";
+import BlogLayout from "../../layouts/BlogLayout.astro";
+
+const {slug} = Astro.params
+
+if(!slug) {
+  return {
+    status: 404,
+    error: new Error("Not found")
+  }
+}
+
+const post = await getEntry('blog', slug);
+
+if(!post) {
+  return {
+    status: 404,
+    error: new Error("Not found")
+  }
+}
+
+const comments = await db.select().from(Comment).where(eq(Comment.post_id, post.id));
+
+const {Content} = await render(post);
+
+
+---
+<BlogLayout title={post.data.title} description={post.data.description}>
+  <Content />
+
+
+  <form class="flex flex-col gap-2">
+    <input type="text" name="post_id" value={post.id} hidden />
+    <input class="border border-blue-600 p-2" type="text" name="author" placeholder="Your name" />
+    <textarea class="border border-blue-600 p-2" name="body" placeholder="Your comment"></textarea>
+    <button type="submit" class="bg-blue-500 text-white rounded-md px-4 py-2 cursor-pointer">Submit</button>
+  </form>
+
+  <h2 class="underline">Comments</h2>
+  <ul class="space-y-3">
+    {comments.map((comment) => (
+      <li class="flex items-center gap-2">
+        <span>{comment.body}</span> {"-"}
+        <span class="text-sm text-neutral-600">{comment.author}</span>
+      </li>
+    ))}
+</BlogLayout>
+
+
+<script>
+import { actions, isInputError } from "astro:actions";
+import { navigate } from "astro:transitions/client";
+
+    
+  const form = document.querySelector('form') as HTMLFormElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    const {error } = await actions.createComment(formData);
+
+  if (isInputError(error)) {
+
+    if (error.fields.author) {
+    const message = error.fields.author.join(', ');
+      alert(`Author: ${message}`);
+    }
+
+    if (error.fields.body) {
+      const message = error.fields.body.join(', ');
+      alert(`Body: ${message}`);
+    }
+
+  } else {
+    navigate(location.pathname);
+  }});
+  
+  </script>

@@ -1,0 +1,10 @@
+---
+import { Comment, db } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+
+const comments = await db.select().from(Comment);
+---
+
+<Layout>
+<pre>{JSON.stringify(comments, null, 2)}</pre>
+</Layout>

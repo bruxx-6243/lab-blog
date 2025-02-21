@@ -1,9 +1,9 @@
 ---
 
 import { actions } from 'astro:actions';
-
 import { getEntry, render } from "astro:content";
 import { Comment, db, eq } from "astro:db";
+
 import BlogLayout from "../../layouts/BlogLayout.astro";
 
 const {slug} = Astro.params
@@ -28,9 +28,6 @@ const comments = await db.select().from(Comment).where(eq(Comment.post_id, post.
 
 const {Content} = await render(post);
 
-
-
- Astro.getActionResult(actions.createComment);
 ---
 <BlogLayout title={post.data.title} description={post.data.description}>
   <Content />

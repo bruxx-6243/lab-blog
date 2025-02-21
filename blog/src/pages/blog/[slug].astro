@@ -1,5 +1,7 @@
 ---
 
+import { actions } from 'astro:actions';
+
 import { getEntry, render } from "astro:content";
 import { Comment, db, eq } from "astro:db";
 import BlogLayout from "../../layouts/BlogLayout.astro";
@@ -27,12 +29,14 @@ const comments = await db.select().from(Comment).where(eq(Comment.post_id, post.
 const {Content} = await render(post);
 
 
+
+ Astro.getActionResult(actions.createComment);
 ---
 <BlogLayout title={post.data.title} description={post.data.description}>
   <Content />
 
 
-  <form class="flex flex-col gap-2">
+  <form method="POST" action={actions.createComment} class="flex flex-col gap-2">
     <input type="text" name="post_id" value={post.id} hidden />
     <input class="border border-blue-600 p-2" type="text" name="author" placeholder="Your name" />
     <textarea class="border border-blue-600 p-2" name="body" placeholder="Your comment"></textarea>
@@ -40,7 +44,7 @@ const {Content} = await render(post);
   </form>
 
   <h2 class="underline">Comments</h2>
-  <ul class="space-y-3">
+  <ul id="comments" class="space-y-3">
     {comments.map((comment) => (
       <li class="flex items-center gap-2">
         <span>{comment.body}</span> {"-"}
@@ -50,7 +54,7 @@ const {Content} = await render(post);
 </BlogLayout>
 
 
-<script>
+<!-- <script>
 import { actions, isInputError } from "astro:actions";
 import { navigate } from "astro:transitions/client";
 
@@ -80,4 +84,4 @@ import { navigate } from "astro:transitions/client";
     navigate(location.pathname);
   }});
   
-  </script>
+  </script> -->

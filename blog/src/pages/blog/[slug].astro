@@ -4,6 +4,7 @@ import { actions } from 'astro:actions';
 import { getEntry, render } from "astro:content";
 import { Comment, db, eq } from "astro:db";
 
+import { isInputError } from 'astro:actions';
 import BlogLayout from "../../layouts/BlogLayout.astro";
 
 const {slug} = Astro.params
@@ -28,6 +29,13 @@ const comments = await db.select().from(Comment).where(eq(Comment.post_id, post.
 
 const {Content} = await render(post);
 
+
+
+ const result  =  Astro.getActionResult(actions.createComment);
+
+ if(result && !isInputError(result.error)){
+  return Astro.redirect(`/blog/${post.id}`)
+ }
 ---
 <BlogLayout title={post.data.title} description={post.data.description}>
   <Content />
